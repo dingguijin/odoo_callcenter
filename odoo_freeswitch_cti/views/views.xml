@@ -1,0 +1,440 @@
+<odoo>
+  <data>
+    
+    <record id="sip_view_users_form" model="ir.ui.view">
+      <field name="name">sip.res.users.form</field>
+      <field name="model">res.users</field>
+      <field name="inherit_id" ref="base.view_users_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//notebook/page[1]" position="after">
+          <page string="CallCenter User" name="callcenter_user">
+            <group>
+              <group>
+                <field name="sip_number" />
+              </group>
+              <group>
+                <field name="sip_password" />
+              </group>            
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="sip_view_res_users_preferences_form" model="ir.ui.view">
+      <field name="name">sip.res.users.preferences_form</field>
+      <field name="model">res.users</field>
+      <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+      <field name="arch" type="xml">
+        <xpath expr="//notebook/page[1]" position="after">
+          <page string="CallCenter User" name="callcenter_user" groups="odoo_freeswitch_cti.group_sip_user">
+            <group>
+              <group>
+                <field name="sip_number" />
+              </group>
+              <group>
+                <field name="sip_password" />
+              </group>            
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+
+    <!-- Server Actions -->
+    <record id="ir_actions_server_dialplan_extension" model="ir.actions.server">
+      <field name="name">Dialplan Graph</field>
+      <field name="model_id" ref="model_freeswitch_cti_dialplan_extension"/>
+      <field name="binding_model_id" ref="model_freeswitch_cti_dialplan_extension"/>
+      <field name="binding_type">action</field>
+      <field name="binding_view_types">form</field>
+      <field name="state">code</field>
+      <field name="code">
+if records:  
+ action = {
+   "type": "ir.actions.act_window",
+   "name": "Dialplan Graph",
+   "view_mode": "dialplan",
+   "res_model": "freeswitch_cti.dialplan_extension",
+   "res_id": records[0].id,
+ }        
+      </field>
+    </record>
+
+    <!-- Views -->
+    <record id="diaplan_extension_view_dialplan_graph" model="ir.ui.view">
+      <field name="name">dialplan_extension.view.dialplan.graph</field>
+      <field name="model">freeswitch_cti.dialplan_extension</field>
+      <field name="arch" type="xml">
+        <dialplan string="Dialplan Extension Flow Graph">
+          <field name="id"/>
+        </dialplan>
+      </field>
+    </record>
+
+    <record id="diaplan_extension_view_tree" model="ir.ui.view">
+      <field name="name">dialplan.extension.view.tree</field>
+      <field name="model">freeswitch_cti.dialplan_extension</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="id"/>
+          <field name="name"/>
+          <field name="type"/>
+          <field name="context"/>
+          <field name="is_continue"/>
+          <field name="condition_field"/>
+          <field name="condition_expression"/>
+          <field name="priority"/>
+          <field name="is_active"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="diaplan_extension_view_form" model="ir.ui.view">
+      <field name="name">dialplan.extension.view.form</field>
+      <field name="model">freeswitch_cti.dialplan_extension</field>
+      <field name="arch" type="xml">
+        <form js_class="dialplan_form">
+          <sheet>
+            <group>
+              <group>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="context"/>
+              </group>
+              <group>
+                <field name="is_continue" />
+                <field name="condition_field" />
+                <field name="condition_expression" />
+                <field name="is_continue" />
+                <field name="priority"/>
+                <field name="is_active"/>
+              </group>              
+            </group>
+            <notebook>
+              <page string="Nodes">
+                <tree>
+                  <field name="node_ids"/>
+                </tree>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="freeswitch_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.freeswitch.view.tree</field>
+      <field name="model">freeswitch_cti.freeswitch</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="freeswitch_hostname"/>
+          <field name="freeswitch_ip"/>
+          <field name="freeswitch_password"/>
+          <field name="is_active"/>
+          <field name="is_online"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="agent_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.agent.view.tree</field>
+      <field name="model">res.users</field>
+      <field name="arch" type="xml">
+        <tree js_class="agent_list">
+          <field name="name" />
+          <field name="sip_number" />
+          <field name="sip_register_status" />
+          <field name="sip_phone_status" />
+          <field name="sip_agent_status" />
+          <field name="sip_phone_user_agent" />
+          <field name="sip_phone_ip" />
+          <field name="sip_auth_realm" />
+          <field name="sip_phone_last_seen" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="queue_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.callcenter.queue.view.tree</field>
+      <field name="model">freeswitch_cti.callcenter_queue</field>
+      <field name="arch" type="xml">
+        <tree js_class="queue_list">
+          <field name="name" />
+          <field name="strategy" />
+          <field name="queue_agents" widget="many2many_tags"/>
+          <field name="active_customers" widget="many2many_tags" />
+        </tree>
+      </field>
+    </record>
+    
+    <record id="supervisor_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.supervisor.view.tree</field>
+      <field name="model">res.users</field>
+      <field name="arch" type="xml">
+        <tree>
+        </tree>
+      </field>
+    </record>
+
+    <record id="cti_cdr_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.cti_cdr.view.tree</field>
+      <field name="model">freeswitch_cti.cti_cdr</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+          <field name="direction" />
+          <field name="channel_uuid" />
+          <field name="call_uuid" />
+          <field name="sip_from_user" />
+          <field name="sip_to_user" />
+          <field name="sip_from_host" />
+          <field name="sip_to_host" />
+          <field name="hangup_cause" />
+          <field name="duration" />
+          <field name="answersec" />
+          <field name="record_url" widget="audio" options="{'mime': 'audio/wav'}"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_open_view_callcenter_queue_form" model="ir.ui.view"> 
+      <field name="name">freeswitch_cti.callcenter_queue.form</field>  
+      <field name="model">freeswitch_cti.callcenter_queue</field>
+      <field eval="18" name="priority"/>
+      <field name="arch" type="xml">
+        <form string="Queues">
+          <sheet>
+            <group>
+              <group>
+                <field name="name" />
+                <field name="strategy" />
+              </group>
+              <group>
+                <field name="moh_sound" />
+                <field name="record_template" />
+                <field name="time_base_score" />
+                
+                <field name="tier_rules_apply" />
+                <field name="tier_rule_wait_second" />
+
+                <field name="tier_rule_wait_multiple_level" />
+                
+                <field name="tier_rule_no_agent_no_wait" />
+
+                <field name="discard_abandoned_after" />
+                
+                <field name="abandoned_resume_allowed" />
+                <field name="max_wait_time" />
+                <field name="max_wait_time_with_no_agent" />
+                
+                <field name="max_wait_time_with_no_agent_time_reached" />
+                <field name="ring_progressively_delay" />
+
+              </group>
+            </group>
+            <notebook>
+              <page string="Queue Tiers">
+                <field name="queue_tiers">
+                  <tree editable="bottom">
+                    <field name="tier_agent_id" />
+                    <field name="tier_level" />
+                    <field name="tier_position" />
+                  </tree>
+                </field>
+              </page>
+              <page string="Queue Agents">
+                <field name="queue_agents">
+                  <tree>
+                    <field name="name" />
+                    <field name="sip_number" />
+                    <field name="sip_agent_status" />
+                  </tree>
+                </field>
+              </page>
+
+              <page string="Active Customers">
+                <field name="active_customers">
+                  <tree>
+                    <field name="name" />
+                  </tree>
+                </field>
+              </page>
+              
+              <page string="Queue Customers">
+                <field name="queue_customers">
+                  <tree>
+                    <field name="name" />
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_open_view_cti_event_form" model="ir.ui.view"> 
+      <field name="name">freeswitch_cti.cti_event.form</field>  
+      <field name="model">freeswitch_cti.cti_event</field>
+      <field eval="18" name="priority"/>
+      <field name="arch" type="xml">
+        <form string="Events">
+          <sheet>
+            <group>
+              <group>
+                <field name="name" />
+                <field name="subclass" />
+                <field name="freeswitch" />
+                <field name="content_type" />
+                <field name="content_length" />
+              </group>
+              <group>                
+                <field name="command_id" />
+                <field name="command_name" />
+                <field name="sip_number" />
+              </group>
+            </group>
+            <notebook>
+              <page string="Event Content">
+                <field name="event_content">
+                </field>
+              </page>
+              <page string="Sub Content">
+                <field name="content_content">
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="open_view_agents_list" model="ir.actions.act_window">
+      <field name="name">Agents</field>
+      <field name="res_model">res.users</field>
+      <field name="domain">[["is_callcenter_agent", "=", True]]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Views -->
+    <record id="freeswitch_cti_command_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.cti_command.view.tree</field>
+      <field name="model">freeswitch_cti.cti_command</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="parameter"/>
+          <field name="status"/>
+          <field name="result"/>
+          <field name="execute_time"/>
+          <field name="confirm_time"/>          
+        </tree>
+      </field>
+    </record>
+
+    <record id="freeswitch_cti_event_view_tree" model="ir.ui.view">
+      <field name="name">freeswitch_cti.cti_event.view.tree</field>
+      <field name="model">freeswitch_cti.cti_event</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="freeswitch"/>
+          <field name="name"/>
+          <field name="subclass"/>
+          <field name="command_name"/>
+          <field name="content_type"/>
+          <field name="content_length"/>
+          <field name="content_content"/>
+          <field name="event_content"/>
+          <field name="create_date"/>          
+        </tree>
+      </field>
+    </record>
+
+    
+    <record id="open_view_callcenter_queue_list" model="ir.actions.act_window">
+      <field name="name">Queues</field>
+      <field name="res_model">freeswitch_cti.callcenter_queue</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="open_view_cti_command_list" model="ir.actions.act_window">
+      <field name="name">CTI Commands</field>
+      <field name="res_model">freeswitch_cti.cti_command</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="open_view_cti_event_list" model="ir.actions.act_window">
+      <field name="name">CTI Events</field>
+      <field name="res_model">freeswitch_cti.cti_event</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="open_view_cti_cdr_list" model="ir.actions.act_window">
+      <field name="name">CTI Call Log</field>
+      <field name="res_model">freeswitch_cti.cti_cdr</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="open_view_dialplan_extension_list" model="ir.actions.act_window">
+      <field name="name">Dialplan Extension</field>
+      <field name="res_model">freeswitch_cti.dialplan_extension</field>
+      <field name="view_mode">tree,form,dialplan</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem
+        id="menu_freeswitch_cti_root"
+        name="CallCenter"
+        web_icon="freeswitch_cti/static/description/icon.png"
+        sequence="75"/>
+    
+    <menuitem
+        id="menu_all_agents"
+        name="All Agents"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_agents_list"
+        sequence="1"/>
+
+    <menuitem
+        id="menu_all_cti_commands"
+        name="CTI Commands"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_cti_command_list"
+        sequence="0"/>
+
+    <menuitem
+        id="menu_all_cti_events"
+        name="CTI Events"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_cti_event_list"
+        sequence="0"/>
+
+    <menuitem
+        id="menu_all_callcenter_queues"
+        name="Callcenter Queues"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_callcenter_queue_list"
+        sequence="0"/>
+
+    <menuitem
+        id="menu_all_cdr"
+        name="Callcenter Call Log"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_cti_cdr_list"
+        sequence="0"/>
+
+    <menuitem
+        id="menu_all_dialplan"
+        name="Callcenter Dialplan"
+        parent="menu_freeswitch_cti_root"
+        action="open_view_dialplan_extension_list"
+        sequence="0"/>
+
+  </data>
+
+</odoo>
+

@@ -1,0 +1,384 @@
+.o_flow_view {
+    height: 100%;
+    width: 100%;
+    min-height: 768px;
+
+    display: flex;
+    flex-direction: row;
+
+    .o_flow_right {
+        
+        width: 360px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: content-box;
+        border-left: solid;
+
+        .o_flow_panel_container {
+            width: 100%;
+            overflow: auto;
+            flex: 1;
+            border-bottom: solid;
+
+            .o_flow_panel {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+
+                .o_flow_panel_card {
+                    box-sizing: border-box;
+                    display: flex;
+                    flex-direction: column;
+                    margin: 8px;
+                    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2),
+                                0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+                    .o_flow_panel_card_title {
+                        padding: 24px 16px 16px;
+                        display: flex;
+                        flex: 1 1 auto;
+                        flex-direction: row;
+                    }
+                    .o_flow_panel_card_body {
+                        display: block;
+                        padding: 16px;
+                        padding-bottom: 32px;
+
+                        table {
+                            width: 100%;
+                            .o_flow_panel_node_td {
+                                width: 160px;
+                                .o_flow_panel_node_select {
+                                    width: 100%;
+                                    input {
+                                        width: 100%;
+                                    }
+                                }
+                            }
+                        }
+
+                        .o_flow_panel_card_input_container {
+                            display: flex;
+                            flex-direction: row;
+
+                            .o_flow_panel_card_input {
+                                flex: 1;
+                                input {
+                                    width: 100%;
+                                }
+                            }
+
+                            .o_flow_panel_card_input_button {
+                                font-size: 20px;
+                                display: flex;
+                                flex-direction: row;
+                                .o_flow_panel_card_input_button_ok {
+                                    cursor: pointer;
+                                    padding-left: 5px;
+                                    padding-right: 5px;
+                                }
+                                .o_flow_panel_card_input_button_cancel {
+                                    cursor: pointer;
+                                    padding-right: 5px;
+                                }
+                            }
+                        }
+                    }
+                    .o_flow_panel_card_title + .o_flow_panel_card_body {
+                        padding-top: 0;
+                    }
+                }
+            }
+        }
+
+        .o_flow_zoom_container {
+            overflow: hidden;
+            
+            height: 360px;
+            width: 100%;
+            position: relative;
+
+            .o_flow_view_point_mask {
+                position: absolute;
+                background-color: darkseagreen;
+                opacity: 0.5;    
+            }
+
+            .o_flow_zoom {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                
+                
+                img {
+                    width: 100%;
+                }
+
+                canvas {
+                    width: 100%;
+                    height: 100%;
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+            }
+        }
+    }
+
+    .o_flow_toolbar_container {
+        .o_flow_toolbar {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            border-right: solid;
+
+            .o_flow_toolbar_item {
+                width: 180px;
+                height: 40px;
+                min-height: 40px;
+                max-height: 40px;
+                padding: 10px;
+                display: flex;
+                flex-direction: row;
+
+                align-items: center;
+                cursor: pointer;
+                border-bottom: 2px solid #CCCCCC;
+
+                &:hover {
+                    background-color: lightgray;
+                }
+
+                span {
+                    font-size: 18px;
+                    display: inline-flex !important;
+                }
+
+                p {
+                    margin:0px;
+                    padding-left: 10px;
+                }
+            }
+        }
+    }
+
+    .o_flow_container {
+        flex: 1;
+        height: 100%;
+        overflow: hidden;
+
+        .o_flow_chart {
+            width: 3600px;
+            height: 3600px;
+            background-color: darkgray;
+
+            .o_operator_icon {
+                width: 220px;
+
+                .flowchart-operator-title {
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    background: #CCCCCC;
+                }
+
+                &.selected {
+                    .flowchart-operator-title {
+                        background: #F0F0F0;
+                    }
+                }
+                
+                .o_flow_operator_overlay {
+                    position: absolute;
+                    right: 0px;
+                    top: 0px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    flex-direction: row-reverse;                               
+                    .o_flow_operator_overlay_button {
+                        cursor: pointer;
+                        width: 22px;
+                        .fa {
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+            
+            .flowchart-operator-body {
+                text-align: center;
+                &:before {
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    font-size: 43px;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+            }
+
+            .flowchart-operator-connector-set {
+                .flowchart-operator-connector-arrow {
+                    top: 5px !important;
+                }
+                .flowchart-operator-connector-small-arrow {
+                    top: 10px !important;
+                }
+            }
+
+            .o_operator_icon_music {
+                .flowchart-operator-body:before {
+                    content: "\f001";
+                }
+            }
+
+            .o_operator_icon_circle-o {
+                .flowchart-operator-body:before {
+                    content: "\f10c";
+                }
+            }
+
+            .o_operator_icon_stop-circle-o {
+                .flowchart-operator-body:before {
+                    content: "\f28e";
+                }
+            }
+
+            .o_operator_icon_play-circle-o {
+                .flowchart-operator-body:before {
+                    content: "\f01d";
+                }
+            }
+
+            .o_operator_icon_tty {
+                .flowchart-operator-body:before {
+                    content: "\f1e4";
+                }
+            }
+
+            .o_operator_icon_user-circle {
+                .flowchart-operator-body:before {
+                    content: "\f2bd";
+                }
+            }
+
+            .o_operator_icon_exchange {
+                .flowchart-operator-body:before {
+                    content: "\f0ec";
+                }
+            }
+
+            .o_operator_icon_phone {
+                .flowchart-operator-body:before {
+                    content: "\f095";
+                }
+            }
+
+            .o_operator_icon_gear {
+                .flowchart-operator-body:before {
+                    content: "\f013";
+                }
+            }
+
+            .o_operator_icon_handshake-o {
+                .flowchart-operator-body:before {
+                    content: "\f2b5";
+                }
+            }
+
+
+            .o_operator_icon_trash-o {
+                .flowchart-operator-body:before {
+                    content: "\f014";
+                }
+            }
+
+            .o_operator_icon_group {
+                .flowchart-operator-body:before {
+                    content: "\f0c0";
+                }
+            }
+
+            .o_operator_icon_headphone {
+                .flowchart-operator-body:before {
+                    content: "\f025";
+                }
+            }
+
+            .o_operator_icon_microphone {
+                .flowchart-operator-body:before {
+                    content: "\f130";
+                }
+            }
+
+            .o_operator_icon_phone-square {
+                .flowchart-operator-body:before {
+                    content: "\f098";
+                }
+            }
+
+            .o_operator_icon_volume-control-phone {
+                .flowchart-operator-body:before {
+                    content: "\f2a0";
+                }
+            }
+
+            .o_operator_icon_whatsapp {
+                .flowchart-operator-body:before {
+                    content: "\f232";
+                }
+            }
+
+            .o_operator_icon_telegram {
+                .flowchart-operator-body:before {
+                    content: "\f2c6";
+                }
+            }
+
+            .o_operator_icon_wechat {
+                .flowchart-operator-body:before {
+                    content: "\f1d7";
+                }
+            }
+
+            .o_operator_icon_address-card {
+                .flowchart-operator-body:before {
+                    content: "\f2bb";
+                }
+            }
+
+            .o_operator_icon_address-card-o {
+                .flowchart-operator-body:before {
+                    content: "\f2bc";
+                }
+            }
+
+            .o_operator_icon_database {
+                .flowchart-operator-body:before {
+                    content: "\f1c0";
+                }
+            }
+
+            .o_operator_icon_envelope {
+                .flowchart-operator-body:before {
+                    content: "\f0e0";
+                }
+            }
+
+            .o_operator_icon_envelope-o {
+                .flowchart-operator-body:before {
+                    content: "\f003";
+                }
+            }
+
+            .o_operator_icon_th {
+                .flowchart-operator-body:before {
+                    content: "\f00a";
+                }
+            }
+
+        }
+    }
+}
