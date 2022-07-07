@@ -2,12 +2,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'FreeSwitch CTI',
-    'category': 'CallCenter',
-    'summary': 'Odoo FreeSWITCH CTI',
+
+        'price': 2999,
+        'currency': 'EUR',
+    'name': 'Odoo Callcenter',
+    'category': 'callcenter',
+    'summary': 'Odoo Callcenter Total Solution',
     'version': '1.0',
     'description': """
-        This module provides CTI connection with FreeSWITCH.
+        This module provides a callcenter solution with Odoo and FreeSWITCH.
         """,
     'depends': ['mail', 'contacts'],
     'data': [
