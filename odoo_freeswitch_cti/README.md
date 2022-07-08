@@ -2,7 +2,7 @@
 Odoo FreeSWITCH CTI run as a standalone process spawned by Odoo and connect FreeSWITCH inbound service.
 Based on Odoo and FreeSwitch, it provides a total PBX/Callcenter solution.
 
-![](https://github.com/dingguijin/odoo_freeswitch_cti/raw/main/doc/images/pbx.png)
+![](doc/images/popup.png)
 
 # Highlight Features
 
@@ -80,5 +80,6 @@ Based on Odoo and FreeSwitch, it provides a total PBX/Callcenter solution.
 
 
 Any question please drop me an email.
-Email: dingguijin@gmail.com
-Wechat: ding_guijin
+
+* Email: dingguijin@gmail.com
+* Wechat: ding_guijin
