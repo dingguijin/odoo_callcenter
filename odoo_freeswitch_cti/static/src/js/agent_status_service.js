@@ -4,13 +4,9 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 const agentStatusService = {
-    dependencies: ["notification", "action"],
-    start(env, { notification, action }) {
-
-        console.log("SERVICE ENV ---------------------", env);
-        
+    dependencies: ["notification", "action", "user"],
+    start(env, { notification, action, user }) {        
         env.bus.on("WEB_CLIENT_READY", null, async () => {
-            console.log(">>>>>>> agentStatusService Ready <<<<<<<<<<<<");
             const legacyEnv = owl.Component.env;
 	        //env.services.legacy_bus_service.onNotification(this, (notifications) => {
             legacyEnv.services.bus_service.onNotification(this, (notifications) => {
@@ -24,18 +20,28 @@ const agentStatusService = {
                     if (!payload.event_name) {
                         return;
                     }
-
-                   
+               
                     if (payload.event_name == "CHANNEL_CREATE") {
                         if (payload.call_direction == "outbound") {
-                            notification.add(payload.message, {
-			                    type: "info",
-			                    title: "Incoming Call",
-                                sticky: true,
-                                onClose: function() {                                
-                                },
-                            });
+                            if (user.partnerId == payload.called_res_id) {
+                                notification.add(payload.caller_id, {
+			                        type: "info",
+			                        title: "Incoming Call",
+                                    sticky: true,
+                                    onClose: function() {                       
+                                    },
+                                });
+
+                                action.doAction({
+                                    type: "ir.actions.act_window",
+                                    res_model: "res.partner",
+                                    target: "new",
+                                    res_id: payload.caller_res_id,
+                                    views: [[false, "form"]]
+                                });
+                            }
                         }
+                        
                         // setTimeout(function() {
                         //     action.doAction({
                         //         type: "ir.actions.act_window",
