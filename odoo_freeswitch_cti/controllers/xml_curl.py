@@ -1368,9 +1368,6 @@ class FreeSwitchXmlCurl(http.Controller):
     def dialplan(self, *args, **kwargs):
         _logger.info("DIALPLAN for [%s], [%s]" % (http.request.params["Caller-Caller-ID-Name"],
                                                   http.request.params["Caller-Context"]))
-
-        _logger.info("DIALPLAN for [%s]" % (http.request.params))
-
         if not self._is_hostname_matched():
             return _EMPTY_XML
 
@@ -1469,5 +1466,7 @@ class FreeSwitchXmlCurl(http.Controller):
             _extension_xml = _extension_xml.replace("{{id}}", str(_extension.id))
             _extension_xmls.append(_extension_xml)
         _xml = _xml.replace("{{extensions}}", "\n".join(_extension_xmls))
+
+        _logger.info(_xml)
         return _xml
     

@@ -7,44 +7,62 @@
     <field name="profile">internal</field>
     <field name="context">default</field>
     <field name="condition_field">destination_number</field>
-    <field name="condition_expression">^[1-2][0-9]{3}$</field>
+    <field name="condition_expression">^([1-2][0-9]{3})$</field>
     <field name="is_active" eval="True"></field>
   </record>
     
   <record id="freeswitch_cti_node_1" model="freeswitch_cti.dialplan_node">
     <field name="node_type">start</field>
     <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
-    <field name="name">Node Start 1</field>
+    <field name="name">Dialplan Start</field>
     <field name="display_left">100</field>
     <field name="display_top">100</field>
   </record>
-  
-  <record id="freeswitch_cti_node_2" model="freeswitch_cti.dialplan_node">
-    <field name="node_type">playback</field>
+
+  <record id="freeswitch_cti_node_set_1" model="freeswitch_cti.dialplan_node">
+    <field name="node_type">set</field>
     <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
-    <field name="name">Node Playback 2</field>
-    <field name="display_left">380</field>
+    <field name="name">Set Dialed Extension</field>
+    <field name="node_param">{"variable":"dialed_extension", "value": "$1"}</field>
+    <field name="display_left">280</field>
+    <field name="display_top">300</field>
+  </record>
+
+  <record id="freeswitch_cti_node_2" model="freeswitch_cti.dialplan_node">
+    <field name="node_type">bridge</field>
+    <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
+    <field name="name">Bridge</field>
+    <field name="node_param">{"data":"user/${dialed_extension}@${domain_name}"}</field>
+    <field name="display_left">480</field>
     <field name="display_top">300</field>
   </record>
 
   <record id="freeswitch_cti_node_3" model="freeswitch_cti.dialplan_node">
     <field name="node_type">exit</field>
     <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
-    <field name="name">Node Exit 3</field>
+    <field name="name">Dialplan Exit</field>
     <field name="display_left">680</field>
     <field name="display_top">100</field>
   </record>
 
-    <record id="freeswitch_cti_event_1" model="freeswitch_cti.dialplan_node_event">
+  <record id="freeswitch_cti_event_1" model="freeswitch_cti.dialplan_node_event">
     <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
     <field name="name">SUCCESS</field>
     <field name="node_id" ref="freeswitch_cti_node_1"></field>
-    <field name="next_node" ref="freeswitch_cti_node_2"></field>
+    <field name="next_node" ref="freeswitch_cti_node_set_1"></field>
   </record>
+
 
   <record id="freeswitch_cti_event_2" model="freeswitch_cti.dialplan_node_event">
     <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
-    <field name="name">PLAYBACK_END</field>
+    <field name="name">SUCCESS</field>
+    <field name="node_id" ref="freeswitch_cti_node_set_1"></field>
+    <field name="next_node" ref="freeswitch_cti_node_2"></field>
+  </record>
+
+  <record id="freeswitch_cti_event_3" model="freeswitch_cti.dialplan_node_event">
+    <field name="extension_id" ref="freeswitch_cti_extension_1"></field>
+    <field name="name">SUCCESS</field>
     <field name="node_id" ref="freeswitch_cti_node_2"></field>
     <field name="next_node" ref="freeswitch_cti_node_3"></field>
   </record>

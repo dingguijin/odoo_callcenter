@@ -120,7 +120,7 @@ class ResUsers(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if self.is_callcenter_agent:
-            self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
+        # if self.is_callcenter_agent:
+        #     self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
         return res 
     

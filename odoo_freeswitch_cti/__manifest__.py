@@ -42,6 +42,7 @@
             'odoo_freeswitch_cti/static/src/js/dialplan_view.js',
             'odoo_freeswitch_cti/static/src/js/dialplan_form.js',
 
+            'odoo_freeswitch_cti/static/src/js/agent_status_service.js',
             'odoo_freeswitch_cti/static/src/js/agent_list.js',
             'odoo_freeswitch_cti/static/src/js/queue_list.js',
             'odoo_freeswitch_cti/static/src/js/audio_url.js'

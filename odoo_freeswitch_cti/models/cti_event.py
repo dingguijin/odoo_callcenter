@@ -26,3 +26,11 @@ class CtiEvent(models.Model):
     sip_number = fields.Char("Sip Number", required=False)
 
     subclass = fields.Char("Event Subclass", required=False)
+    
+    call_direction = fields.Char("Call Direction")
+    channel_call_uuid = fields.Char("Channel Call Uuid")
+    other_leg_unique_id = fields.Char("Other Leg Unique ID")
+
+    caller_caller_id_number = fields.Char("Caller Caller ID Number")
+    caller_destination_number = fields.Char("Caller Destination Number")
+    

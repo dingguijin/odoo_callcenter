@@ -204,12 +204,13 @@ class FreeSwitchInbound():
         if not _event_name:
             return
 
-        _logger.info("Event-Name: [%s], Unique-ID: [%s], Call-Direction: [%s], Channel-Call-UUID: [%s], Other-Leg-Unique-ID: [%s]" %
+        _logger.info("Event-Name: [%s], Unique-ID: [%s], Call-Direction: [%s], Channel-Call-UUID: [%s], Other-Leg-Unique-ID: [%s], Event-Subclass: [%s]" %
                      (_event_name,
                       headers.get("Unique-ID"),
                       headers.get("Call-Direction"),
                       headers.get("Channel-Call-UUID"),
-                      headers.get("Other-Leg-Unique-ID")
+                      headers.get("Other-Leg-Unique-ID"),
+                      headers.get("Event-Subclass")
                       ))
 
         _event_func_name = "_handle_event_func_%s" % _event_name.upper()
@@ -224,7 +225,7 @@ class FreeSwitchInbound():
 
     def _handle_event_func_CHANNEL_CREATE(self, headers):
         self._create_user_channel_map(headers)
-        self._update_sip_phone_channel_create(headers)
+
         #"Call-Direction"
         #"Caller-Username"
         #"Caller-Caller-ID-Number"
@@ -286,8 +287,7 @@ class FreeSwitchInbound():
         return
 
     def _handle_event_func_CHANNEL_HANGUP(self, headers):
-        self._update_sip_phone_hangup(headers)
-        self._remove_user_channel_map(headers)
+        #self._remove_user_channel_map(headers)
         return
     
     def _handle_event_func_CHANNEL_HANGUP_COMPLETE(self, headers):
@@ -309,7 +309,6 @@ class FreeSwitchInbound():
         return
     
     def _handle_event_func_CHANNEL_ANSWER(self, headers):
-        self._update_sip_phone_answer(headers)
         return
 
     def _handle_event_func_CHANNEL_BRIDGE(self, headers):
@@ -337,7 +336,6 @@ class FreeSwitchInbound():
         return
 
     def _handle_event_func_PRESENCE_IN(self, headers):
-        #self._update_sip_phone_presence(headers)
         return
     
     def _handle_event_func_BACKGROUND_JOB(self, headers):
@@ -355,6 +353,15 @@ class FreeSwitchInbound():
         return
 
     def _handle_event_func_API(self, headers):
+        return
+
+    def _handle_event_func_PRIVATE_COMMAND(self, headers):
+        return
+
+    def _handle_event_func_CHANNEL_PARK(self, headers):
+        return
+
+    def _handle_event_func_CHANNEL_UNPARK(self, headers):
         return
 
     def _send_bgapi_command(self, command, parameter, record_id):
@@ -436,7 +443,7 @@ class FreeSwitchInbound():
         cmd = "%s\n\n\n\n" % cmd
         cmd = cmd.encode("utf-8")
         self.writer.write(cmd)
-        _logger.info(">>>>>>>>>>>>>>>>>>>send command [%s]", cmd)
+        _logger.info(">>>>>>Send command [%s]", cmd)
         return
 
     def _update_cti_command_status(self, id, status, result=""):
@@ -491,8 +498,11 @@ class FreeSwitchInbound():
         with self.db_connection.cursor() as cr:
             _r = cr.execute("""
             INSERT into freeswitch_cti_cti_event
-            (name, content_type, content_length, content_content, event_content, subclass, command_name, create_date) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, now()) RETURNING id;
+            (name, content_type, content_length, content_content, event_content,
+            subclass, command_name, create_date, 
+            call_direction, channel_call_uuid, other_leg_unique_id, 
+            caller_caller_id_number, caller_destination_number) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, now(), %s, %s, %s, %s, %s) RETURNING id;
             """, (headers.get("Event-Name") or "",
 #                  self.freeswitch_info["id"],
                   headers.get("Content-Type") or "",
@@ -500,7 +510,13 @@ class FreeSwitchInbound():
                   headers.get("Content-Content") or "",
                   json.dumps(headers),
                   headers.get("Event-Subclass") or "",
-                  _command))
+                  _command,
+                  headers.get("Call-Direction"),
+                  headers.get("Channel-Call-UUID"),
+                  headers.get("Other-Leg-Unique-ID"),
+                  headers.get("Caller-Caller-ID-Number"),
+                  headers.get("Caller-Destination-Number")
+                  ))
             _r = cr.fetchone()
             headers.update({"cti_event_id": _r})
         return
@@ -667,44 +683,6 @@ class FreeSwitchInbound():
         return
 
     def _handle_subclass_func_sofia_register(self, headers):
-        _status = headers.get("status") or ""# Registered(UDP)
-        _user_agent = headers.get("user-agent") or ""
-        _sip_auth_username = headers.get("sip_auth_username") or ""
-        _sip_auth_realm = headers.get("sip_auth_realm") or ""
-        _sip_phone_ip = headers.get("network-ip") or ""
-        if not _sip_auth_username:
-            return
-        with self.db_connection.cursor() as cr:
-            cr.execute("""
-            UPDATE res_users
-            set sip_register_status='%s',
-            sip_phone_user_agent='%s',
-            sip_phone_ip='%s',
-            sip_auth_realm='%s',
-            sip_phone_last_seen=now()
-            WHERE sip_number='%s'
-            """ % (_status, _user_agent, _sip_phone_ip,
-                   _sip_auth_realm, _sip_auth_username))
-            cr.commit()
-        return
-
-    def _update_sip_phone_presence(self, headers):
-        _from = headers.get("from") or ""
-        _event_type = headers.get("event_type") or ""
-
-        _logger.info("PRESENCE IN: [%s: %s]" % (_from, _event_type))
-        if not _from or not _event_type:
-            return
-
-        _sip_number = _from.split("@")[0]
-        with self.db_connection.cursor() as cr:
-            cr.execute("""
-            UPDATE res_users SET
-            sip_phone_status='%s',
-            sip_phone_last_seen=now()
-            WHERE sip_number='%s'
-            """ % (_event_type, _sip_number))
-            cr.commit()
         return
 
     def _create_user_channel_map(self, headers):
@@ -737,33 +715,7 @@ class FreeSwitchInbound():
         _logger.info("CHANNEL CREATE : %s: " % self.channels)
         return    
 
-    def _update_sip_phone_answer(self, headers):
-        _uuid = headers.get("Unique-ID")
-        _sip_number = self._get_sip_number_from_channel_map(_uuid)
-        if not _sip_number:
-            return
-        self._update_sip_phone_status(_sip_number, "talking")
-        return
-
     def _update_sip_phone_channel_create(self, headers):
-        _uuid = headers.get("Unique-ID")
-        _sip_number = self._get_sip_number_from_channel_map(_uuid)
-        if not _sip_number:
-            return
-        
-        _call_direction = self.channels[_uuid]["call_direction"]
-        _status = "calling"
-        if _call_direction == "outbound":
-            _status = "ringing"
-        self._update_sip_phone_status(_sip_number, _status)
-        return
-
-    def _update_sip_phone_hangup(self, headers):
-        _uuid = headers.get("Unique-ID")
-        _sip_number = self._get_sip_number_from_channel_map(_uuid)
-        if not _sip_number:
-            return
-        self._update_sip_phone_status(_sip_number, "hangup")
         return
 
     def _remove_user_channel_map(self, headers):
@@ -780,14 +732,3 @@ class FreeSwitchInbound():
         if _channel["call_direction"] == "inbound":
             return _channel.get("caller_id")
         return _channel.get("called_id")
-
-    def _update_sip_phone_status(self, sip_number, status):
-        with self.db_connection.cursor() as cr:
-            cr.execute("""
-            UPDATE res_users SET
-            sip_phone_status='%s',
-            sip_phone_last_seen=now()
-            WHERE sip_number='%s'
-            """ % (status, sip_number))
-            cr.commit()
-        return

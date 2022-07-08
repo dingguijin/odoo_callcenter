@@ -136,15 +136,15 @@ class CallcenterQueue(models.Model):
     @api.model
     def create(self, vals):
         _r = super().create(vals)
-        self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
+        #self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
         return _r
 
     def write(self, vals):
         _r = super().write(vals)
-        self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
+        #self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
         return _r
 
     def unlink(self):
         _r = super().unlink()
-        self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
+        #self.env["freeswitch_cti.cti_command"].send_cti_command("reload", "mod_callcenter")
         return _r

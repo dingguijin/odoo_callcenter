@@ -92,19 +92,20 @@ class FreeSwitchOutbound():
         return self.event_queue.popleft()
 
     async def _execute_node(self, event):
-        _logger.info(">>>>>>>>>>>>>> execute_node <<<<<<<<<<<<< %s", event)
+        #_logger.info(">>>>>>>>>>>>>> execute_node_event <<<<<<<<<<<<< %s", event)
 
         if event.get("event") == None:
             node_object = NodeFactory.build(event)
             await node_object.execute_node(event)
-        else:
-            next_node = self._find_next_node(event)
-            _logger.info("NEXT NODE >>>>>>>>>>>>>>>> %s" % next_node)
-            if next_node:
-                event.get("stream").set_current_node(next_node)
-                event.update(node=next_node)
-                node_object = NodeFactory.build(event)
-                await node_object.execute_node(event)
+            return
+        
+        next_node = self._find_next_node(event)
+        #_logger.info("NEXT NODE >>>>>>>>>>>>>>>> %s <<<<<<<<<<<<<<<" % next_node)
+        if next_node:
+            event.get("stream").set_current_node(next_node)
+            event.update(node=next_node)
+            node_object = NodeFactory.build(event)
+            await node_object.execute_node(event)
         return
 
     def push_node_event(self, stream, node, event=None):
@@ -199,7 +200,7 @@ class OutboundStream():
         # keep receive more headers
         if self._is_meta_headers(headers):
             return
-        _logger.info("%s", headers)
+
         await self._handle_headers(headers)
         self._tmp_headers = {}
         return
@@ -253,8 +254,6 @@ class OutboundStream():
                 "execute-app-arg: %s" % arg]
         _esl = "\n".join(_esl) + "\n\n"
         _esl = _esl.encode("utf-8")
-
-        _logger.info("APP -> %s" % _esl)
         self.writer.write(_esl)
         return
 
@@ -280,7 +279,6 @@ class OutboundStream():
         _start_node = self._search_dialplan_start_node(dialplan)
         if not _start_node:
             return
-        _logger.info(">>>>>>>>>>>>>> start node <<<<<<<<<< %s" % _start_node)
         self.server.push_node_event(self, _start_node)
         self.set_current_node(_start_node)
         return
@@ -299,6 +297,13 @@ class OutboundStream():
         
     def _handle_event(self, headers):
         # convert freeswitch event to result event and push to server
+        _event_name = headers.get("Event-Name")
+        _application = headers.get("Application")
+        _application_data = headers.get("Application-Data")
+        
+        _logger.info("Event-Name: [%s], Application: [%s], Application-Data: [%s]" % (
+            _event_name, _application, _application_data
+        ))
         return
 
     def on_start_node(self):
