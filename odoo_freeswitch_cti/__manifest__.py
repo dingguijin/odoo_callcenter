@@ -3,6 +3,7 @@
 
 {
 
+        'author': 'Guijin Ding',
         'price': 2999,
         'currency': 'EUR',
     'name': 'Odoo Callcenter',
