@@ -2,6 +2,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
+        'author': 'Guijin Ding',
+        'price': 10,
+        'currency': 'EUR',
     'name': 'Debrand',
     'category': 'Cryptocurrency',
     'summary': 'Debrand for redistribution',
