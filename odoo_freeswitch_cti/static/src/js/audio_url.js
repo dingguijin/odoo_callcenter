@@ -54,21 +54,16 @@ var AudioUrlWidget = basicFields.InputField.extend({
         if (!this.value) {
             return;
         }
-        let href = this.value;
-        if (this.value && !this.websitePath) {
-            const regex = /^((ftp|http)s?:\/)?\//i; // http(s)://... ftp(s)://... /...
-            href = !regex.test(this.value) ? `http://${href}` : href;
-        }
+        let href = "/freeswitch_recording/" + this.value;
         this.el.classList.add("o_form_uri", "o_text_overflow");
-        const audioEl = Object.assign(document.createElement('audio', {
-            controls: "controls"
-        }));
-
-        const sourceEl = Object.assign(document.createElement("source", {
-            "source": href,
-            "type": this.mime
-        }));
-        audioEl.appendChild(sourceEl);
+        const audioEl = Object.assign(document.createElement('audio'));
+        audioEl.setAttribute("controls", "controls");
+        audioEl.setAttribute("autoplay", "false");
+        audioEl.setAttribute("preload", "auto");
+        
+        audioEl.setAttribute("src", location.origin + href);
+        audioEl.setAttribute("type", this.mime);
+        audioEl.style.cssText = "width:100%;height:34px;";
         this.el.textContent = '';
         this.el.appendChild(audioEl);
     },

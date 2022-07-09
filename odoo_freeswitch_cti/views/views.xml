@@ -195,7 +195,9 @@ if records:
           <field name="hangup_cause" />
           <field name="duration" />
           <field name="answersec" />
-          <field name="record_url" widget="audio" options="{'mime': 'audio/wav'}"/>
+          <field name="record_file" widget="audio" options="{'mime': 'audio/wav'}"/>
+          <field name="start_stamp" />
+          <field name="end_stamp" />
         </tree>
       </field>
     </record>

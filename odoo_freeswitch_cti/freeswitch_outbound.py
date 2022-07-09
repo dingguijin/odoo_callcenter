@@ -8,6 +8,7 @@
 import aiohttp
 import asyncio
 import collections
+import datetime
 import json
 import logging
 import re
@@ -165,7 +166,8 @@ class OutboundStream():
         self._send_esl_command("divert_events on")
         self._send_esl_command("linger 5")
         self._send_esl_command("event plain all")
-
+        self._send_esl_execute("set", "record_smaple_rate=16000")
+        
         while True:
             if self.reader.at_eof():
                 await asyncio.sleep(1)
@@ -229,6 +231,7 @@ class OutboundStream():
                 return
             self.current_dialplan = _dialplan
             self.status = "INIT"
+            self._start_recording(headers)
             return
             
         if self.status == "INIT":
@@ -239,6 +242,16 @@ class OutboundStream():
         if self.status == "DIALPLAN":
             self._handle_event(headers)
             return
+        return
+
+    def _start_recording(self, headers):
+        _now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        _caller_id = headers.get("Caller-Caller-ID-Number")
+        _called_id = headers.get("Caller-Destination-Number")
+        _channel_uuid = headers.get("Unique-ID")
+        _record_file_name="%s_%s_%s_%s.wav"%(_now, _caller_id, _called_id, _channel_uuid)
+        self._send_esl_execute("set", "record_file_name=%s" % _record_file_name)
+        self._send_esl_execute("record_session", "$${recordings_dir}/%s" % _record_file_name)
         return
 
     def _send_esl_command(self, cmd):
@@ -304,6 +317,11 @@ class OutboundStream():
         _logger.info("Event-Name: [%s], Application: [%s], Application-Data: [%s]" % (
             _event_name, _application, _application_data
         ))
+        _func = getattr(self, "_handle_event_" % _event_name, None)
+        if not _func:
+            _logger.error("No func handle event: [%s]" % _event_name)
+            return
+        _func(headers)
         return
 
     def on_start_node(self):
@@ -357,3 +375,18 @@ class OutboundStream():
 
         _logger.info("VARIABLE: -> %s" % variable)
         return variable
+
+    def _is_application(self, headers, application):
+        if headers.get("variable_current_application") == application:
+            return True
+        return False
+    
+    def _handle_event_PLAYBACK_STOP(self, headers):
+        if self._is_application("playback"):
+            self.server.push_node_event(self, self.current_node, "PLAYBACK_END")
+            return
+        if self._is_application("play_and_detect_speech"): 
+        self.server.push_node_event(self, self.current_node, "PLAYBACK_END")
+        return
+    return
+        

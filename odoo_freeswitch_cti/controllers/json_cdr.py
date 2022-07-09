@@ -3,6 +3,7 @@
 import datetime
 import json
 import logging
+from urllib import parse
 
 from odoo import http
 
@@ -13,31 +14,29 @@ def _from_timestamp(timestamp):
         return None
     return datetime.datetime.fromtimestamp(int(timestamp)/1000000)
 
+def _from_stamp_str(stamp):
+    if not stamp:
+        return None
+    return datetime.datetime.strptime(stamp, "%Y-%m-%d %H:%M:%S")
+
 class FreeSwitchJsonCdr(http.Controller):
 
     @http.route('/freeswitch_recording/<record_file>', type='http', methods=['GET'], auth='user')
     def record_file(self, record_file):
         _record_path = "/usr/local/freeswitch/recordings/" + record_file
-        with open(_record_path, "r") as _file:
+        with open(_record_path, "rb") as _file:
             _record_data = _file.read()
         httpheaders = [('Content-Type', 'audio/wav'), ('Content-Length', len(_record_data))]
-        return request.make_response(_record_data, headers=httpheaders)
+        return http.request.make_response(_record_data, headers=httpheaders)
 
     @http.route('/freeswitch_json_cdr', type='json', methods=['POST'], auth='none', csrf=False)
     def xml_cdr(self, *args, **kw):
         # _logger.info(http.request.jsonrequest)
-        # _logger.info(json.dumps(http.request.jsonrequest, indent=2))
+        _logger.info(json.dumps(http.request.jsonrequest, indent=2))
 
         _cdr = http.request.jsonrequest
         _variables = _cdr.get("variables")
-        _record_file = None
-        _app_log = _cdr.get("app_log") or {}
-        _applications = _app_log.get("applications") or []
-        for _application in _applications:
-            if _application.get("app_name") == "bind_meta_app":
-                if _application.get("app_data").find("record_session::") >=0:
-                    _record_file = _application.get("app_data").split("/")[-1]
-
+        _record_file = _variables.get("record_file_name")
         _cdr_id = http.request.env["freeswitch_cti.cti_cdr"].sudo().create({
             "name": _variables.get("uuid"),
             "direction": _variables.get("direction"),
@@ -53,7 +52,9 @@ class FreeSwitchJsonCdr(http.Controller):
             "progresssec": _variables.get("progresssec"),
             "answersec": _variables.get("answersec"),
             "waitsec": _variables.get("waitsec"),
-            "record_file": _record_file
+            "record_file": _record_file,
+            "start_stamp": _from_stamp_str(parse.unquote(_variables.get("start_stamp"))),
+            "end_stamp": _from_stamp_str(parse.unquote(_variables.get("end_stamp")))
         })
         
         _callflows = _cdr.get("callflow") or []

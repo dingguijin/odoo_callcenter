@@ -11,6 +11,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 from .abstract_nodeclass import AbstractNodeClass
+from .node_event import NodeEvent
 
 class start_NodeClass(AbstractNodeClass):
 
