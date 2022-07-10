@@ -1,3 +1,9 @@
+@font-face {
+    name: 'proxima-odoo';
+    src: url("./google/Roboto/Roboto-Regular.ttf") format("woff2"), url("./google/Roboto/Roboto-Regular.ttf") format("woff"), url("./google/Roboto/Roboto-Regular.ttf") format("opentype"), url("./google/Roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+
 .o_audio_cell {
     width: 286px !important;
     max-width: 286px !important;

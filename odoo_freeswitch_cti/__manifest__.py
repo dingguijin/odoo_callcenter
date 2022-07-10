@@ -3,9 +3,9 @@
 
 {
 
-        'author': 'Guijin Ding',
-        'price': 2999,
-        'currency': 'EUR',
+    'author': 'Guijin Ding',
+    'price': 2999,
+    'currency': 'EUR',
     'name': 'Odoo Callcenter',
     'category': 'callcenter',
     'summary': 'Odoo Callcenter Total Solution',
@@ -33,6 +33,7 @@
             'odoo_freeswitch_cti/static/lib/js/jquery.panzoom/jquery.panzoom.js',
             'odoo_freeswitch_cti/static/lib/js/jquery.flowchart/jquery.flowchart.js',
             'odoo_freeswitch_cti/static/lib/js/html2canvas/html2canvas.js',
+            'odoo_freeswitch_cti/static/lib/js/html-to-image/html-to-image.js',
 
             'odoo_freeswitch_cti/static/src/js/node/*.js',
             'odoo_freeswitch_cti/static/src/js/widget/*.js',

@@ -5,6 +5,8 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
     var NodeRegistry = require('freeswitch_cti.node_registry');
     var PanelWidget = require("freeswitch_cti.panel_widget");
 
+    //var htmlToImage = require('@freeswitch_cti/lib/html-to-image/html-to-image');
+    
     /**
      * Flow Renderer
      *
@@ -370,10 +372,9 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
                 yOffset = flowSize.y - flowContainerPos.y * 2;
             }
 
-            console.log(xOffset, yOffset);
             this.$flowchart.panzoom("pan", 0 - xOffset, 0 - yOffset, {
-
             });
+            
             this._drawViewPointMask(xOffset, yOffset);
         },
 
@@ -386,19 +387,26 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
         
         _rerenderZoom: function () {
             var self = this;
-            html2canvas(self.$flowchart[0]).then(function (canvas) {
+            // html2canvas(self.$flowchart[0]).then(function (canvas) {
+            //     // draw view point
+            //     self._drawViewPointRect(canvas);
+            //     if (self.$zoom.find("canvas")) {
+            //         self.$zoom.find("canvas").remove();
+            //     }
+            //     self.$zoom[0].appendChild(canvas);
+            // });
+            // const fontEmbedCss = htmlToImage.getFontEmbedCSS(self.$flowchart[0]);
+            // html2Image.toSVG(element1, { fontEmbedCss });
+            // html2Image.toSVG(element2, { fontEmbedCss });
+            htmlToImage.toCanvas(self.$flowchart[0], {preferredFontFormat:"proxima-odoo"}).then(function(canvas) {
                 // draw view point
-                self._drawViewPointRect(canvas);
-                /* 
-                   var img = new Image();
-                   img.src = canvas.toDataURL("image/png");
-                   self.$zoom.empty();
-                   self.$zoom.append(img);
-                */
+                // self._drawViewPointRect(canvas);
                 if (self.$zoom.find("canvas")) {
                     self.$zoom.find("canvas").remove();
                 }
                 self.$zoom[0].appendChild(canvas);
+                //self._drawViewPointMask();
+                // self._focusFlowChartCenter({offsetX: 0, offsetY: 0});
             });
         },
 
@@ -545,7 +553,6 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
             this.$flowchart.panzoom({
                 disableZoom: true,
                 onEnd: function (e, panzoom, matrix, changed) {
-                    console.log(matrix);
                     var left = 0 - matrix[4];
                     var top = 0 - matrix[5];
                     self._drawViewPointMask(left, top);
