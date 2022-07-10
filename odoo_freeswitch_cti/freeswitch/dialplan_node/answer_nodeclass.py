@@ -11,11 +11,12 @@ import logging
 _logger = logging.getLogger(__name__)
 
 from .abstract_nodeclass import AbstractNodeClass
+from .node_event import NodeEvent
 
 class answer_NodeClass(AbstractNodeClass):
 
     async def execute_node(self, event):
         self.send_esl_execute("answer")
-        self.return_result_event("SUCCESS")
+        self.return_result_event(NodeEvent.SUCCESS.name)
         return
         

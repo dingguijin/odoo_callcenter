@@ -1466,7 +1466,5 @@ class FreeSwitchXmlCurl(http.Controller):
             _extension_xml = _extension_xml.replace("{{id}}", str(_extension.id))
             _extension_xmls.append(_extension_xml)
         _xml = _xml.replace("{{extensions}}", "\n".join(_extension_xmls))
-
-        _logger.info(_xml)
         return _xml
     

@@ -32,7 +32,7 @@ class FreeSwitchJsonCdr(http.Controller):
     @http.route('/freeswitch_json_cdr', type='json', methods=['POST'], auth='none', csrf=False)
     def xml_cdr(self, *args, **kw):
         # _logger.info(http.request.jsonrequest)
-        _logger.info(json.dumps(http.request.jsonrequest, indent=2))
+        # _logger.info(json.dumps(http.request.jsonrequest, indent=2))
 
         _cdr = http.request.jsonrequest
         _variables = _cdr.get("variables")

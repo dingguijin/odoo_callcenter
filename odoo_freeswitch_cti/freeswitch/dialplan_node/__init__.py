@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import node_factory
+from . import node_event
 
 from . import abstract_nodeclass
 from . import start_nodeclass

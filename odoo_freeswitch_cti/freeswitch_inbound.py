@@ -218,8 +218,8 @@ class FreeSwitchInbound():
             _event_func = getattr(self, _event_func_name)
             _event_func(headers)
         else:
-            _logger.error("no _func defined for event [%s]" % _event_name)
-            _logger.error("%s" % headers)
+            _logger.warning("No _func for [%s]" % _event_name)
+            #_logger.error("%s" % headers)
 
         return
 

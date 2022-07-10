@@ -12,6 +12,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 from .abstract_nodeclass import AbstractNodeClass
+from .node_event import NodeEvent
 
 class set_NodeClass(AbstractNodeClass):
 
@@ -19,6 +20,6 @@ class set_NodeClass(AbstractNodeClass):
         _variable = self.node_param.get("variable")
         _value = self.node_param.get("value")
         self.send_esl_execute("set", "%s=%s" % (_variable, _value))
-        self.return_result_event("SUCCESS")
+        self.return_result_event(NodeEvent.SUCCESS.name)
         return
         

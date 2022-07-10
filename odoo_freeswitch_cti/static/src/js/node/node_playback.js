@@ -7,27 +7,27 @@ odoo.define('freeswitch_cti.node_playback', function (require) {
     var NodePlayback = NodeAbstract.extend({
         node_path: function() {
             return [
+                "SUCCESS",
                 "FAILED",
                 "PLAYBACK_END",
                 "PLAYBACK_BREAK",
                 "ASR_FAILED",
                 "TIMEOUT",
                 "HANGUP",
-                "UNKNOWN",
                 
-                "INPUT_0",
-                "INPUT_1",
-                "INPUT_2",
-                "INPUT_3",
-                "INPUT_4",
-                "INPUT_5",
-                "INPUT_6",
-                "INPUT_7",
-                "INPUT_8",
-                "INPUT_9",
+                "DTMF_0",
+                "DTMF_1",
+                "DTMF_2",
+                "DTMF_3",
+                "DTMF_4",
+                "DTMF_5",
+                "DTMF_6",
+                "DTMF_7",
+                "DTMF_8",
+                "DTMF_9",
 
-                "INPUT_SHARP",
-                "INPUT_ASTERISK"
+                "DTMF_SHARP",
+                "DTMF_ASTERISK"
             ];
         },
 

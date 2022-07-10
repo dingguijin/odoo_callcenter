@@ -16,5 +16,5 @@ from .node_event import NodeEvent
 class start_NodeClass(AbstractNodeClass):
 
     async def execute_node(self, event):
-        self.return_result_event("SUCCESS")
+        self.return_result_event(NodeEvent.SUCCESS.name)
         

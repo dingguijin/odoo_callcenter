@@ -43,7 +43,7 @@ class Main(http.Controller):
         return
 
     def _update_agent_status_channel_create(self, event):
-        _logger.info("channel create %s" % event.event_content)
+        #_logger.info("channel create %s" % event.event_content)
         _sip_number = self._get_sip_number_from_event(event)
         if event.call_direction == "inbound":
             self._update_user_phone_status(_sip_number, "calling")
@@ -52,13 +52,13 @@ class Main(http.Controller):
         return
 
     def _update_agent_status_channel_hangup(self, event):
-        _logger.info("channel hangup %s" % event.event_content)
+        #_logger.info("channel hangup %s" % event.event_content)
         _sip_number = self._get_sip_number_from_event(event)
         self._update_user_phone_status(_sip_number, "hangup")
         return
 
     def _update_agent_status_channel_answer(self, event):
-        _logger.info("channel answer %s" % event.event_content)
+        #_logger.info("channel answer %s" % event.event_content)
         _sip_number = self._get_sip_number_from_event(event)
         self._update_user_phone_status(_sip_number, "answer")
         return
@@ -85,7 +85,6 @@ class Main(http.Controller):
 
     def _update_agent_status_sofia_register(self, event):
         headers = json.loads(event.event_content)
-        _logger.info("SOFIA REGISTER %s" % headers)
         _status = headers.get("status") or ""# Registered(UDP)
         _user_agent = headers.get("user-agent") or ""
         _sip_auth_username = headers.get("sip_auth_username") or ""

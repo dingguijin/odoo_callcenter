@@ -6,6 +6,7 @@
 #
 #
 
+import datetime
 import json
 import logging
 
@@ -21,6 +22,11 @@ class AbstractNodeClass():
         self.node_param = self.stream.get_variable_value(self.node_param)
         self.node_param = json.loads(self.node_param)
 
+        self.node_timeout = self.node.get("node_timeout")
+        self._start_stamp = datetime.datetime.now()
+
+        if self.node_param.get("clear_dtmf"):
+            self.stream.on_clear_dtmf()
         return
 
     async def execute_node(self, event):
@@ -33,3 +39,11 @@ class AbstractNodeClass():
     def send_esl_execute(self, app, arg=""):
         self.stream._send_esl_execute(app, arg)
         return
+
+    def is_node_timeout(self):
+        if not self.node_timeout:
+            return False
+        _now = datetime.datetime.now()
+        if _now - self._start_stamp > datetime.timedelta(seconds=int(self.node_timeout)):
+            return True
+        return False

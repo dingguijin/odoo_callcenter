@@ -22,6 +22,7 @@ import odoo
 from . import freeswitch_info
 
 from .freeswitch.dialplan_node.node_factory import NodeFactory
+from .freeswitch.dialplan_node.node_event import NodeEvent
 
 _logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ class FreeSwitchOutbound():
                 break
             _event = self._get_node_event()
             if not _event:
+                self._node_timeout()
                 await asyncio.sleep(1)
                 continue
             await self._execute_node(_event)
@@ -68,7 +70,8 @@ class FreeSwitchOutbound():
                 await self.server.serve_forever()
             except asyncio.exceptions.CancelledError as e:
                 # silent close
-                pass
+                _logger.info("Callceled outbound loop")
+
         return
 
     async def _stop(self):
@@ -82,6 +85,7 @@ class FreeSwitchOutbound():
         asyncio.run(self._stop())
 
     async def _client_connected_cb(self, reader, writer):
+        _logger.info(">>>>>>>>>>>>>>>>>>>>>> stream %s <<<<<<<<<<<<<<<<<<<<<", self.stream_ids)
         self.streams[self.stream_ids] = OutboundStream(self, self.stream_ids, reader, writer)
         await self.streams[self.stream_ids].start_stream()
         self.stream_ids += 1
@@ -98,6 +102,7 @@ class FreeSwitchOutbound():
         if event.get("event") == None:
             node_object = NodeFactory.build(event)
             await node_object.execute_node(event)
+            event.get("stream").set_current_node_object(node_object)
             return
         
         next_node = self._find_next_node(event)
@@ -107,8 +112,9 @@ class FreeSwitchOutbound():
             event.update(node=next_node)
             node_object = NodeFactory.build(event)
             await node_object.execute_node(event)
+            event.get("stream").set_current_node_object(node_object)
         return
-
+    
     def push_node_event(self, stream, node, event=None):
         self.event_queue.append({"event": event, "stream": stream, "node": node})
         return
@@ -137,6 +143,11 @@ class FreeSwitchOutbound():
             del self.streams[_id]
         return
 
+    def _node_timeout(self):
+        for stream in self.streams.values():
+            stream.node_timeout()
+        return
+    
 class OutboundStream():
 
     def __init__(self, server, _id, reader, writer):
@@ -149,11 +160,10 @@ class OutboundStream():
 
         self.extension_ids = set()
         self.current_dialplan = None
-        self.current_node = None
+        self.current_node = None # from db
+        self.current_node_object = None # from node_XXXClass
 
         self._tmp_headers = {}
-
-        self.is_closed = False
 
         self.is_variable_parsed = False
         self.variables = {}
@@ -170,19 +180,20 @@ class OutboundStream():
         
         while True:
             if self.reader.at_eof():
-                await asyncio.sleep(1)
-
-            if self.is_closed:
+                _logger.warning("Stream [%s] EOF", self.id)
                 break
-
+                
             try:
                 _timeout = 1
                 _header = await asyncio.wait_for(self.reader.readline(), timeout=_timeout)
             except asyncio.TimeoutError:
-                _logger.error("In [%d] seconds, no event, yield" % _timeout)
+                _logger.warning("In [%d] seconds, no event, yield" % _timeout)
+                await asyncio.sleep(3)
+                continue
 
             if not _header:
                 await asyncio.sleep(1)
+                continue
 
             await self._parse_header(_header)
         return
@@ -199,6 +210,7 @@ class OutboundStream():
         # keep receive more headers
         if header != b"\n":
             return
+        
         # keep receive more headers
         if self._is_meta_headers(headers):
             return
@@ -317,9 +329,11 @@ class OutboundStream():
         _logger.info("Event-Name: [%s], Application: [%s], Application-Data: [%s]" % (
             _event_name, _application, _application_data
         ))
-        _func = getattr(self, "_handle_event_" % _event_name, None)
+        if not _event_name:
+            return
+        _func = getattr(self, "_handle_event_%s" % _event_name, None)
         if not _func:
-            _logger.error("No func handle event: [%s]" % _event_name)
+            _logger.warning("No _func for: [%s]" % _event_name)
             return
         _func(headers)
         return
@@ -334,11 +348,14 @@ class OutboundStream():
         self.current_node = node
         return
 
+    def set_current_node_object(self, node):
+        self.current_node_object = node
+        return
+
     async def _close_stream(self):
         self.server.close_stream(self.id)
         self.writer.close()
         await self.writer.wait_closed()
-        self.is_closed = True
         return
 
     def _update_stream_variable(self, headers):
@@ -382,11 +399,42 @@ class OutboundStream():
         return False
     
     def _handle_event_PLAYBACK_STOP(self, headers):
-        if self._is_application("playback"):
-            self.server.push_node_event(self, self.current_node, "PLAYBACK_END")
+        if self._is_application(headers, "playback"):
+            self.server.push_node_event(self, self.current_node, NodeEvent.PLAYBACK_END.name)
             return
-        if self._is_application("play_and_detect_speech"): 
-        self.server.push_node_event(self, self.current_node, "PLAYBACK_END")
+        if self._is_application(headers, "play_and_detect_speech"): 
+            self.server.push_node_event(self, self.current_node, NodeEvent.PLAYBACK_END.name)
+            return
         return
-    return
-        
+    
+    def _handle_event_DTMF(self, headers):
+        _digit = headers.get("DTMF-Digit")
+        self.dtmf_digits.append(headers.get("DTMF-Digit"))
+        _digit_event = self._digit_event_name(_digit)
+        if self._is_application(headers, "playback"):
+            self.server.push_node_event(self, self.current_node, _digit_event)
+            return
+        if self._is_application(headers, "play_and_detect_speech"): 
+            self.server.push_node_event(self, self.current_node, _digit_event)
+            return
+        return
+
+    def _digit_event_name(self, digit):
+        if digit == "*":
+            digit = "ASTERISK"
+        if digit == "#":
+            digit = "SHARP"
+        _name = "DIGIT_%s" % digit
+        return NodeEvent(_name).name
+    
+    def node_timeout(self):
+        if not self.current_node_object:
+            return
+        if self.current_node_object.is_node_timeout():
+            self.server.push_node_event(self, self.current_node, EventNode.TIMEOUT.name)
+        return
+
+    def on_clear_dtmf(self):
+        self.dtmf_digits = []
+        return
+    

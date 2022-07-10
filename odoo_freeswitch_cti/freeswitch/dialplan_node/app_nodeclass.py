@@ -11,6 +11,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 from .abstract_nodeclass import AbstractNodeClass
+from .node_event import NodeEvent
 
 class app_NodeClass(AbstractNodeClass):
 
@@ -18,5 +19,5 @@ class app_NodeClass(AbstractNodeClass):
         _app = self.node_param.get("app")
         _data = self.node_param.get("data")
         self.send_esl_execute(_app, _data)
-        self.return_result_event("SUCCESS")
-
+        self.return_result_event(NodeEvent.SUCCESS.name)
+        return
