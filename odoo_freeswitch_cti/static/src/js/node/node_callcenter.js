@@ -19,7 +19,7 @@ odoo.define('freeswitch_cti.node_assignment', function (require) {
         },
 
         node_icon: function() {
-            return "user-circle";
+            return "users";
         },
 
         node_params: function() {
