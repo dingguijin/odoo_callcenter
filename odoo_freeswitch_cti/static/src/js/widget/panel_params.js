@@ -6,6 +6,7 @@ odoo.define('freeswitch_cti.panel_params', function (require) {
     var QWeb = core.qweb;
 
     var PanelInput = require('freeswitch_cti.panel_input');
+    var PanelSelection = require('freeswitch_cti.panel_selection');
 
     var PanelParams = Widget.extend({
         template: 'panel_params_template',
@@ -39,7 +40,24 @@ odoo.define('freeswitch_cti.panel_params', function (require) {
                     });
                     _param_el.appendTo(self.$(".o_flow_panel_params")[0]);
                     param.param_widget = _param_el;
-                }                
+                }
+
+                if (param.param_type == "selection") {
+                    var _param_select = new PanelSelection(self, {
+                        selection: {
+                            id: param.param_name + "_" + self.node.node_id,
+                            label: param.param_display,
+                            name: param.param_name,
+                            value: param.param_value,
+                            selection_candidates: param.selection_candidates,
+                            on_change: function(value) {
+                                self._onClickSave(param.param_name, value);
+                            }
+                        }
+                    });
+                    _param_select.appendTo(self.$(".o_flow_panel_params")[0]);
+                    param.param_widget = _param_el;
+                }
             });
             
             return this._super.apply(this, arguments);

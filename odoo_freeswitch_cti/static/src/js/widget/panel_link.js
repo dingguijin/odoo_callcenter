@@ -65,15 +65,12 @@ odoo.define('freeswitch_cti.panel_link', function (require) {
                 });
 
                 self.$(_id).on("mousedown", function(ev) {
-                    console.log("MOUSE DOWN ..............", self.$(_id).val());
                     self.previous_val = self.$(_id).val();
                 });
                 
                 // register on change
                 self.$(_id).on("change", function (ev) {
-                    console.log("on changed", ev);
                     var _operator_id = self.$(_id).val();
-                    console.log("on changed opid", _operator_id, self.previous_val);
                     if (self.previous_val == _operator_id) {
                         return;
                     }

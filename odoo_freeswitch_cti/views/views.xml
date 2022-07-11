@@ -217,7 +217,6 @@ if records:
               </group>
               <group>
                 <field name="moh_sound" />
-                <field name="record_template" />
                 <field name="time_base_score" />
                 
                 <field name="tier_rules_apply" />

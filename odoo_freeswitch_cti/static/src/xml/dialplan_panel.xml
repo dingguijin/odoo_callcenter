@@ -20,7 +20,7 @@
                 <td><strong><t t-esc="path"/></strong></td>
                 <td class="o_flow_panel_node_td">
                   <div>
-                    <select class="o_flow_panel_node_select form-control" t-attf-id="{{'o_flow_panel_node_select_'+path}}" type="select"/>
+                    <select class="o_flow_panel_node_select o_input" t-attf-id="{{'o_flow_panel_node_select_'+path}}" type="select"/>
                   </div>
                 </td>
               </tr>
@@ -31,6 +31,21 @@
     </div>
   </t>
 
+  <t t-name="panel_selection_template">
+    <div class="o_flow_panel_card o_field_widget">
+      <div class="o_flow_panel_card_title">
+        <t t-esc="widget.selection.label"/>
+      </div>
+      <div class="o_flow_panel_card_body">
+        <div class="o_flow_panel_card_input_container">
+          <select class="o_flow_panel_select o_input" t-att-name="widget.selection.name" t-att-id="widget.selection.id" t-att-value="widget.selection.value" type="select">
+            
+          </select>
+        </div>
+      </div>
+    </div>
+  </t>
+  
   <t t-name="panel_input_template">
     <div class="o_flow_panel_card o_field_widget">
       <div class="o_flow_panel_card_title">

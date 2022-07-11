@@ -492,8 +492,6 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
                     self.$flowchart.find('.o_flow_operator_overlay').remove();
 
                     var operator_clone = self.$flowchart.flowchart("getOperatorData", operatorId);
-                    console.log("select render panel.... ", operator_clone);
-                    
                     self._renderPanel(operator_clone);
 
                     var data = self.$flowchart.flowchart("getDataRef");
