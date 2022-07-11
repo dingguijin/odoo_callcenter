@@ -398,6 +398,12 @@
                 }
             }
 
+            .o_operator_icon_users {
+                .flowchart-operator-body:before {
+                    content: "\f0c0";
+                }
+            }
+
         }
     }
 }
