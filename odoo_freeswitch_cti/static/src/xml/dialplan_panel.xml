@@ -32,18 +32,33 @@
   </t>
 
   <t t-name="panel_input_template">
-    <div class="o_flow_panel_card">
+    <div class="o_flow_panel_card o_field_widget">
       <div class="o_flow_panel_card_title">
         <t t-esc="widget.input.label"/>
       </div>
       <div class="o_flow_panel_card_body">
         <div class="o_flow_panel_card_input_container">
           <div class="o_flow_panel_card_input">
-            <input t-att-name="widget.input.name" t-att-value="widget.input.value"/>
+            <t t-if="!widget.is_readonly">
+              <input t-att-name="widget.input.name" t-att-value="widget.input.value" class="o_input o_field_char o_required_modifier" />
+            </t>
+            <t t-else="widget.is_readonly">
+              <span t-esc="widget.input.value"/>
+            </t>
           </div>
           <div class="o_flow_panel_card_input_button" t-if="!widget.hide_buttons">
-            <span class="o_flow_panel_card_input_button_ok fa fa-check"></span>
-            <span class="o_flow_panel_card_input_button_cancel fa fa-close"></span>
+            <t t-if="!widget.is_readonly">
+              <span class="o_flow_panel_card_input_button_save">
+                <i class="fa fa-check"></i>
+                Save
+              </span>
+            </t>
+            <t t-else="widget.is_readonly">
+              <span class="o_flow_panel_card_input_button_edit">
+                <i class="fa fa-pencil"></i>
+                Edit
+              </span>
+            </t>
           </div>
         </div>
       </div>
@@ -56,21 +71,12 @@
         Node Parameters
       </div>
 
-      <div class="o_flow_panel_card_body">
-        
-        <div class="o_flow_panel_params">
-          
-          <div class="o_flow_panel_params_params">
-            
-          </div>
-          <div class="o_flow_panel_params_buttons">
-            <button class="btn btn-primary o_flow_panel_card_params_button_save">Save</button>
-            <button class="btn btn-secondary o_flow_panel_card_params_button_discard">Discard</button>
-          </div>
-          
-        </div>
+      <div class="o_flow_panel_card_body">        
+        <div class="o_flow_panel_params">                    
+        </div>        
       </div>
     </div>
+
   </t>
   
   <t t-name="panel_widget_template">

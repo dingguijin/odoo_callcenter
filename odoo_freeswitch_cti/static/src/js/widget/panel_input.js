@@ -9,8 +9,8 @@ odoo.define('freeswitch_cti.panel_input', function (require) {
     var PanelInput = Widget.extend({
         template: 'panel_input_template',
         events: {
-            'click .o_flow_panel_card_input_button_ok': '_onClickOk',
-            'click .o_flow_panel_card_input_button_cancel': '_onClickCancel',
+            'click .o_flow_panel_card_input_button_save': '_onClickSave',
+            'click .o_flow_panel_card_input_button_edit': '_onClickEdit',
         },
         /**  
          * PanelInput options {input: input}
@@ -20,9 +20,10 @@ odoo.define('freeswitch_cti.panel_input', function (require) {
          * @param {input: input}
          */
         init: function (parent, options) {
-            this._super.apply(this, arguments);
             this.input = options.input;
             this.hide_buttons = options.hide_buttons || false;
+            this.is_readonly = true;
+            this._super.apply(this, arguments);
             console.log("PanelInput options", options);
         },
         /**
@@ -52,18 +53,22 @@ odoo.define('freeswitch_cti.panel_input', function (require) {
          * @private
          * @param {MouseEvent} ev
          */
-        _onClickOk: function (ev) {
+        _onClickSave: function (ev) {
             ev.preventDefault();
             var v = this.$el.find("input[name='" + this.input.name + "']").val();
             if (this.input.save && v != this.input.value) {
                 this.input.save(v, this.input, this);
                 this.input.value = v;
             }
+            this.is_readonly = true;
+            this.renderElement();
         },
 
-        _onClickCancel: function (ev) {
-            ev.preventDefault();
-            this.$el.find("input[name='" + this.input.name + "']").val(this.input.value);
+        _onClickEdit: function (ev) {
+            this.is_readonly = false;
+            this.renderElement();
+            //ev.preventDefault();
+            //this.$el.find("input[name='" + this.input.name + "']").val(this.input.value);
         },
         
     });

@@ -16,6 +16,12 @@ odoo.define('freeswitch_cti.DialplanController', function (require) {
     var Controller = AbstractController.extend({
         custom_events: {
             switch_view: '_onSwitchView',
+
+            "panel_create_link": '_onPanelCreateLink',
+            "panel_remove_link": '_onPanelRemoveLink',
+            "panel_change_operator_title": "_onPanelChangeOperatorTitle",
+            "panel_change_operator_param": "_onPanelChangeOperatorParam",
+
         },
 
         /**
@@ -89,6 +95,26 @@ odoo.define('freeswitch_cti.DialplanController', function (require) {
         //--------------------------------------------------------------------------
         // Handlers
         //--------------------------------------------------------------------------
+
+        _onPanelChangeOperatorParam: function (event) {
+            this.renderer._onPanelChangeOperatorParam(event);
+            this._onSave();
+        },
+
+        _onPanelChangeOperatorTitle: function (event) {
+            this.renderer._onPanelChangeOperatorTitle(event);
+            this._onSave();
+        },
+
+        _onPanelCreateLink: function (event) {
+            this.renderer._onPanelCreateLink(event);
+            this._onSave();
+        },
+
+        _onPanelRemoveLink: function (event) {
+            this.renderer._onPanelRemoveLink(event);
+            this._onSave();
+        },
         
     });
 

@@ -71,26 +71,34 @@
                         .o_flow_panel_card_input_container {
                             display: flex;
                             flex-direction: row;
-
+                            background: white;
+                            padding: 4px;
+                            align-items: center;
+                            
                             .o_flow_panel_card_input {
+                                text-overflow: ellipsis;
+                                overflow: hidden;
                                 flex: 1;
                                 input {
+                                    width: 100%;
+                                }
+                                span {
                                     width: 100%;
                                 }
                             }
 
                             .o_flow_panel_card_input_button {
-                                font-size: 20px;
+                                font-size: 12px;
+                                font-weight: bold;
                                 display: flex;
                                 flex-direction: row;
-                                .o_flow_panel_card_input_button_ok {
-                                    cursor: pointer;
+                                cursor: pointer;
+                                
+                                .o_flow_panel_card_input_button_save {
                                     padding-left: 5px;
-                                    padding-right: 5px;
                                 }
-                                .o_flow_panel_card_input_button_cancel {
-                                    cursor: pointer;
-                                    padding-right: 5px;
+                                .o_flow_panel_card_input_button_edit {
+                                    padding-left: 5px;
                                 }
                             }
                         }

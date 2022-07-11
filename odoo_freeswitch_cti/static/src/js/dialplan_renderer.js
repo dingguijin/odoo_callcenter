@@ -26,10 +26,6 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
         className: 'o_flow_view',
 
         custom_events: {
-            "panel_create_link": '_onPanelCreateLink',
-            "panel_remove_link": '_onPanelRemoveLink',
-            "panel_change_operator_title": "_onPanelChangeOperatorTitle",
-            "panel_change_operator_param": "_onPanelChangeOperatorParam",
         },
 
         init: function (parent, state, params) {
@@ -199,6 +195,7 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
             var operator_clone = this.$flowchart.flowchart("getOperatorData", event.data.operator_id);
             operator_clone.properties.node.node_param = event.data.node_param;
             this.$flowchart.flowchart("setOperatorData", event.data.operator_id, operator_clone);
+            
         },
 
         _onPanelChangeOperatorTitle: function (event) {
@@ -387,17 +384,6 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
         
         _rerenderZoom: function () {
             var self = this;
-            // html2canvas(self.$flowchart[0]).then(function (canvas) {
-            //     // draw view point
-            //     self._drawViewPointRect(canvas);
-            //     if (self.$zoom.find("canvas")) {
-            //         self.$zoom.find("canvas").remove();
-            //     }
-            //     self.$zoom[0].appendChild(canvas);
-            // });
-            // const fontEmbedCss = htmlToImage.getFontEmbedCSS(self.$flowchart[0]);
-            // html2Image.toSVG(element1, { fontEmbedCss });
-            // html2Image.toSVG(element2, { fontEmbedCss });
             htmlToImage.toCanvas(self.$flowchart[0], {preferredFontFormat:"proxima-odoo"}).then(function(canvas) {
                 // draw view point
                 // self._drawViewPointRect(canvas);
@@ -405,8 +391,6 @@ odoo.define('freeswitch_cti.DialplanRenderer', function (require) {
                     self.$zoom.find("canvas").remove();
                 }
                 self.$zoom[0].appendChild(canvas);
-                //self._drawViewPointMask();
-                // self._focusFlowChartCenter({offsetX: 0, offsetY: 0});
             });
         },
 
