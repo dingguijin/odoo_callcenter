@@ -25,7 +25,7 @@
          t-attf-href="http://www.ppmessage.com?utm_source=db&amp;utm_medium=#{_utm_medium}"
          class="badge badge-light">
         <img alt="PPMessage"
-             src="/odoo_debrand/static/img/debrand_logo_tiny.png"
+             src="/odoo_debrand_ppmessage/static/img/debrand_logo_tiny.png"
              style="height: 1em; vertical-align: baseline;"/>
       </a>
     </xpath>
@@ -43,13 +43,14 @@
   </template>
 
   <template id="login_layout" inherit_id="web.login_layout" name="Login Layout">
-    <xpath expr="//img" position="replace">
-      <img t-attf-src="/odoo_debrand/static/img/debrand_logo_tiny.png" alt="Logo" style="max-height:120px; max-width: 100%; width:auto"/>
-    </xpath>
+      <xpath expr="//img" position="replace">
+      <img t-attf-src="/odoo_debrand_ppmessage/static/img/debrand_logo_tiny.png" alt="Logo" style="max-height:120px; max-width: 100%; width:auto"/>
+      </xpath>
 
-    <xpath expr="//div/a" position="replace">
+      <!-- <xpath expr="//div/a" position="replace">
       <a href="https://www.ppmessage.cn?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>PPMessage</span></a>
-    </xpath>
+      </xpath> -->
+
   </template>
 
   
