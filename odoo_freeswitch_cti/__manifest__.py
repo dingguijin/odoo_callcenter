@@ -32,7 +32,7 @@
             
             'odoo_freeswitch_cti/static/lib/js/jquery.panzoom/jquery.panzoom.js',
             'odoo_freeswitch_cti/static/lib/js/jquery.flowchart/jquery.flowchart.js',
-            'odoo_freeswitch_cti/static/lib/js/html2canvas/html2canvas.js',
+            #'odoo_freeswitch_cti/static/lib/js/html2canvas/html2canvas.js',
             'odoo_freeswitch_cti/static/lib/js/html-to-image/html-to-image.js',
 
             'odoo_freeswitch_cti/static/src/js/node/*.js',
