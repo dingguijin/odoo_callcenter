@@ -22,10 +22,8 @@
         'data/freeswitch.xml'
     ],
     'assets': {
-        'web.assets_qweb': [
-            'odoo_freeswitch_cti/static/src/xml/*.xml'
-        ],
         'web.assets_backend': [
+            'odoo_freeswitch_cti/static/src/xml/*.xml',
             'odoo_freeswitch_cti/static/src/scss/dialplan_view.scss',
             
             'odoo_freeswitch_cti/static/lib/js/jquery.flowchart/jquery.flowchart.css',
@@ -59,6 +57,6 @@
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
-    'post_load': 'post_load',
-    'post_init_hook': 'post_init_hook'
+#    'post_load': 'post_load',
+#    'post_init_hook': 'post_init_hook'
 }
