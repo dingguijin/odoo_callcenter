@@ -8,14 +8,18 @@ import viewRegistry from 'web.view_registry';
 const AgentListController = ListController.extend({
     init: function() {
         this._super.apply(this, arguments);
-        owl.Component.env.services.bus_service.onNotification(this, (notifications) => {
-            //console.log(">>>>>>>>>>>>>>> Agent list GET notifications", notifications);
-		    for (const { payload, type } of notifications) {
-                if (type == "agent_update") {                    
-                    this.trigger_up("reload");
-                }
+        const bus_service = owl.Component.env.services.bus_service;
+        bus_service.addEventListener('notification', this._onNotification.bind(this));
+        bus_service.start();
+    },
+
+    _onNotification: function({detail: notifications}) {
+        console.log(">>>>>>>>>>>>>>> Agent list GET notifications", notifications);
+		for (const { payload, type } of notifications) {
+            if (type == "agent_update") {                    
+                this.trigger_up("reload");
             }
-        });
+        }
     }
 });
 
